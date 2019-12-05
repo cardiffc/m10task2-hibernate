@@ -1,8 +1,14 @@
+/**
+ *  У данной сущности составныи ключем будет одновременно student_name и course_name, т.к. такого совпадения более одного в
+ *  таблице быть не может (студент купил конкретный курс только 1 раз. Иное - странно :)
+ *  Составной ключ определяется в классе EmbKeyForPurchase
+ */
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 @Entity
-@IdClass(EmbKey.class)
+@IdClass(EmbKeyForPurchase.class)
 @Table(name = "PurchaseList")
 public class Purchase implements Serializable {
     @Id

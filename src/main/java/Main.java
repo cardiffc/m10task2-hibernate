@@ -1,11 +1,12 @@
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.w3c.dom.ls.LSOutput;
 
+import java.sql.SQLOutput;
 import java.util.Date;
 import java.util.List;
 
@@ -14,25 +15,27 @@ public class Main {
 
         Session skillboxDbSession =  getSession();
 
-        Course course = skillboxDbSession.get(Course.class, 1);
-       // System.out.println(course.getName());
-        Course newCourse = skillboxDbSession.get(Course.class,1);
-        Student newStudent = skillboxDbSession.get(Student.class, 1);
-        String name = newCourse.getTeacher().getName();
-       // System.out.println(name);
-       // System.out.println("Student: " + newStudent.getRegistrationDate());
+        Course newCourse = skillboxDbSession.get(Course.class, 1);
+        String courseTeacherName = newCourse.getTeacher().getName();
         List<Student> courseStudents = newCourse.getStudents();
+        Student newStudent = skillboxDbSession.get(Student.class, 1);
+        Teacher newTeacher = skillboxDbSession.get(Teacher.class, 1);
+        EmbKeyForPurchase keyForPurchase = new EmbKeyForPurchase("Фуриков Эрнст", "Мобильный разработчик с нуля");
+        Purchase newPurchase = skillboxDbSession.get(Purchase.class, keyForPurchase);
+        int price = newPurchase.getPrice();
+        EmbKeyForSubs keyForSubs = new EmbKeyForSubs(2,1);
+        Subscription newSubscription = skillboxDbSession.get(Subscription.class,keyForSubs);
+        Date subsDate = newSubscription.getSubsciptionDate();
 
-      //  Date date = "2018-05-17 00:00:00";
-        EmbKey key1 = new EmbKey("Жариков Афанасий","Веб-разработчик c 0 до PRO");
-        Purchase test = skillboxDbSession.get(Purchase.class, key1);
-
-        System.out.println(test.getPrice());
+        //Проверим получение данных кроме коллекции студентов
+        System.out.println("CourseTeacherName=" + courseTeacherName + "\n" + "newStudentName=" + newStudent.getName() + "\n"
+        + "newTeacherName=" + newTeacher.getName() + "\n" + "newPurchasePrice=" + price + "\n" + "newSubscriptionDate=" + subsDate);
 
 
-//        Transaction sbTransaction = skillboxDbSession.beginTransaction();
+        // Проверим коллекцию студентов
+        courseStudents.forEach(student -> System.out.println(student.getName()));
 
-  //      sbTransaction.commit();
+
         skillboxDbSession.close();
     }
     private static Session getSession ()
