@@ -1,9 +1,13 @@
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+
+import java.util.Date;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
@@ -11,13 +15,24 @@ public class Main {
         Session skillboxDbSession =  getSession();
 
         Course course = skillboxDbSession.get(Course.class, 1);
-        System.out.println(course.getName());
+       // System.out.println(course.getName());
+        Course newCourse = skillboxDbSession.get(Course.class,1);
+        Student newStudent = skillboxDbSession.get(Student.class, 1);
+        String name = newCourse.getTeacher().getName();
+       // System.out.println(name);
+       // System.out.println("Student: " + newStudent.getRegistrationDate());
+        List<Student> courseStudents = newCourse.getStudents();
 
-        Teacher teacher = skillboxDbSession.get(Teacher.class, 1);
+      //  Date date = "2018-05-17 00:00:00";
+        EmbKey key1 = new EmbKey("Жариков Афанасий","Веб-разработчик c 0 до PRO");
+        Purchase test = skillboxDbSession.get(Purchase.class, key1);
 
-        System.out.println("Teacher name: " + teacher.getName() + " Teacher age: " + teacher.getAge()
-                    + " Teacher salary: " + teacher.getSalary());
+        System.out.println(test.getPrice());
 
+
+//        Transaction sbTransaction = skillboxDbSession.beginTransaction();
+
+  //      sbTransaction.commit();
         skillboxDbSession.close();
     }
     private static Session getSession ()
