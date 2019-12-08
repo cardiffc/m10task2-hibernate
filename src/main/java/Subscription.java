@@ -12,28 +12,26 @@ import java.util.Date;
 @Table(name = "Subscriptions")
 public class Subscription implements Serializable {
     @Id
-    @Column(name = "student_id")
-    private int studentId;
+    private Student student;
     @Id
-    @Column(name = "course_id")
-    private int courseId;
+    private Course course;
     @Column(name = "subscription_date")
     private Date subsciptionDate;
 
-    public int getStudentId() {
-        return studentId;
+    public Student getStudent() {
+        return student;
     }
 
-    public void setStudentId(int studentId) {
-        this.studentId = studentId;
+    public void setStudentId(Student studentId) {
+        this.student = studentId;
     }
 
-    public int getCourseId() {
-        return courseId;
+    public Course getCourse() {
+        return course;
     }
 
-    public void setCourseId(int courseId) {
-        this.courseId = courseId;
+    public void setCourse(Course course) {
+        this.course = course;
     }
 
     public Date getSubsciptionDate() {

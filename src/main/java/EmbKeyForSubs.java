@@ -1,12 +1,16 @@
+import javax.persistence.CascadeType;
+import javax.persistence.OneToOne;
 import java.io.Serializable;
 
 public class EmbKeyForSubs implements Serializable {
-    protected int studentId;
-    protected int courseId;
+    @OneToOne (cascade = CascadeType.ALL)
+    protected Student student;
+    @OneToOne (cascade = CascadeType.ALL)
+    protected Course course;
 
-    public EmbKeyForSubs (int studentId, int courseId) {
-        this.studentId = studentId;
-        this.courseId = courseId;
+    public EmbKeyForSubs (Student student, Course courseId) {
+        this.student = student;
+        this.course = courseId;
     }
 
 

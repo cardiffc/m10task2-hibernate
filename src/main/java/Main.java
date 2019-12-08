@@ -15,19 +15,20 @@ public class Main {
 
         Session skillboxDbSession =  getSession();
 
-        Course newCourse = skillboxDbSession.get(Course.class, 1);
+        Course newCourse = skillboxDbSession.get(Course.class, 21);
         String courseTeacherName = newCourse.getTeacher().getName();
         List<Student> courseStudents = newCourse.getStudents();
-        Student newStudent = skillboxDbSession.get(Student.class, 1);
+        Student newStudent = skillboxDbSession.get(Student.class, 43);
         Teacher newTeacher = skillboxDbSession.get(Teacher.class, 1);
         EmbKeyForPurchase keyForPurchase = new EmbKeyForPurchase("Фуриков Эрнст", "Мобильный разработчик с нуля");
         Purchase newPurchase = skillboxDbSession.get(Purchase.class, keyForPurchase);
         int price = newPurchase.getPrice();
-        EmbKeyForSubs keyForSubs = new EmbKeyForSubs(2,1);
+        EmbKeyForSubs keyForSubs = new EmbKeyForSubs(newStudent,newCourse);
         Subscription newSubscription = skillboxDbSession.get(Subscription.class,keyForSubs);
         Date subsDate = newSubscription.getSubsciptionDate();
 
         //Проверим получение данных кроме коллекции студентов
+
         System.out.println("CourseTeacherName=" + courseTeacherName + "\n" + "newStudentName=" + newStudent.getName() + "\n"
         + "newTeacherName=" + newTeacher.getName() + "\n" + "newPurchasePrice=" + price + "\n" + "newSubscriptionDate=" + subsDate);
 
