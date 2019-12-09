@@ -6,6 +6,9 @@ import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.w3c.dom.ls.LSOutput;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.sql.SQLOutput;
 import java.util.Date;
 import java.util.List;
@@ -15,27 +18,9 @@ public class Main {
 
         Session skillboxDbSession =  getSession();
 
-        Course newCourse = skillboxDbSession.get(Course.class, 21);
-        String courseTeacherName = newCourse.getTeacher().getName();
-        List<Student> courseStudents = newCourse.getStudents();
-        Student newStudent = skillboxDbSession.get(Student.class, 43);
-        Teacher newTeacher = skillboxDbSession.get(Teacher.class, 1);
-        EmbKeyForPurchase keyForPurchase = new EmbKeyForPurchase("Фуриков Эрнст", "Мобильный разработчик с нуля");
-        Purchase newPurchase = skillboxDbSession.get(Purchase.class, keyForPurchase);
-        int price = newPurchase.getPrice();
-        EmbKeyForSubs keyForSubs = new EmbKeyForSubs(newStudent,newCourse);
-        Subscription newSubscription = skillboxDbSession.get(Subscription.class,keyForSubs);
-        Date subsDate = newSubscription.getSubsciptionDate();
+        List<Purchase> purchaseList = getPurchaselist(skillboxDbSession);
 
-        //Проверим получение данных кроме коллекции студентов
-
-        System.out.println("CourseTeacherName=" + courseTeacherName + "\n" + "newStudentName=" + newStudent.getName() + "\n"
-        + "newTeacherName=" + newTeacher.getName() + "\n" + "newPurchasePrice=" + price + "\n" + "newSubscriptionDate=" + subsDate);
-
-
-        // Проверим коллекцию студентов
-        courseStudents.forEach(student -> System.out.println(student.getName()));
-
+        purchaseList.forEach(purchase -> System.out.println(purchase.getCourseName() + " / " + purchase.getStudentName()));
 
         skillboxDbSession.close();
     }
@@ -46,6 +31,16 @@ public class Main {
         SessionFactory sessionFactory = metadata.getSessionFactoryBuilder().build();
         Session session = sessionFactory.openSession();
         return session;
+    }
+    private static List<Purchase> getPurchaselist (Session session)
+    {
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Purchase> query = builder.createQuery(Purchase.class);
+        Root<Purchase> root = query.from(Purchase.class);
+        query.select(root);
+        List<Purchase> purchaseList = session.createQuery(query).getResultList();
+
+        return purchaseList;
     }
 
 }
