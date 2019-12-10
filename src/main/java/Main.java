@@ -1,27 +1,49 @@
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.w3c.dom.ls.LSOutput;
-
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.sql.SQLOutput;
-import java.util.Date;
 import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
 
         Session skillboxDbSession =  getSession();
+        CriteriaBuilder builder = skillboxDbSession.getCriteriaBuilder();
 
-        List<Purchase> purchaseList = getPurchaselist(skillboxDbSession);
+        //В отдельном методе получаем все покупки
+        List<Purchase> purchaseList = getPurchaselist(builder,skillboxDbSession);
 
-        purchaseList.forEach(purchase -> System.out.println(purchase.getCourseName() + " / " + purchase.getStudentName()));
+        Transaction fillNewTable = skillboxDbSession.beginTransaction();
 
+        purchaseList.forEach(purchase -> {
+            // Для каждой покупки получаем ID студента
+
+            CriteriaQuery<Student> queryStudent = builder.createQuery(Student.class);
+            Root<Student> studentRoot = queryStudent.from(Student.class);
+            queryStudent.select(studentRoot).where(builder.equal(studentRoot.get("name"), purchase.getStudentName()));
+            Student student = skillboxDbSession.createQuery(queryStudent).getSingleResult();
+            int studentId = student.getId();
+
+            // Для каждой покупки получаем ID курса
+
+            CriteriaQuery<Course> queryCourse = builder.createQuery(Course.class);
+            Root<Course> courseRoot = queryCourse.from(Course.class);
+            queryCourse.select(courseRoot).where(builder.equal(courseRoot.get("name"), purchase.getCourseName()));
+            Course course = skillboxDbSession.createQuery(queryCourse).getSingleResult();
+            int courseId = course.getId();
+
+            StudentsCourses currentRecord = new StudentsCourses();
+            currentRecord.setStudentId(studentId);
+            currentRecord.setCourseId(courseId);
+            skillboxDbSession.save(currentRecord);
+        });
+        fillNewTable.commit();
         skillboxDbSession.close();
     }
     private static Session getSession ()
@@ -32,15 +54,12 @@ public class Main {
         Session session = sessionFactory.openSession();
         return session;
     }
-    private static List<Purchase> getPurchaselist (Session session)
+    private static List<Purchase> getPurchaselist (CriteriaBuilder builder, Session session)
     {
-        CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<Purchase> query = builder.createQuery(Purchase.class);
         Root<Purchase> root = query.from(Purchase.class);
         query.select(root);
         List<Purchase> purchaseList = session.createQuery(query).getResultList();
-
         return purchaseList;
     }
-
 }
