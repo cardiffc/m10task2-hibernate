@@ -10,6 +10,12 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
 
+/**
+ * Для выполнения данного задания в БД была создана таблица StudentCourseId со следующей структурой:
+ * record_id, INT, AI, PK
+ * student_id INT
+ * course_id INT
+ */
 public class Main {
     public static void main(String[] args) {
 
